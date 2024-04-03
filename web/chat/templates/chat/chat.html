@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static  %}
+{% block title %} Init Chat {% endblock title%}
+
+{% block head %}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{% endblock head %}
+
+{% block container %}
+{% endblock container %}
+
+{% block jquery %}
+  $.getScript('{% static 'chat/js/init.js' %}');
+{% endblock %}

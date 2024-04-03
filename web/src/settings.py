@@ -12,12 +12,15 @@ DEBUG = int(os.environ.get('DEBUG', 0))
 
 ALLOWED_HOSTS: list = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
+BLOG_URL = os.environ.get('BLOG_URL', 'http://web-blog:8000')
+BLOG_HEADERS_PERMISSION = os.environ.get('BLOG_HEADERS_PERMISSION', 'owNV8NCVt0WuaCihX3Fy4kfV')
+
 if DEBUG:
     ALLOWED_HOSTS: list = ['*']
 
 AUTH_USER_MODEL = 'main.User'
 
-PROJECT_TITLE = os.environ.get('PROJECT_TITLE', 'Template')
+PROJECT_TITLE = os.environ.get('PROJECT_TITLE', 'Chat')
 
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379')
 
@@ -37,6 +40,7 @@ HEALTH_CHECK_URL = os.environ.get('HEALTH_CHECK_URL', '/application/health/')
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,10 +55,13 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'corsheaders',
     'rosetta',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
     'main.apps.MainConfig',
+    'chat.apps.ChatConfig'
+
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS + LOCAL_APPS
@@ -75,7 +82,7 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
-    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.SessionAuthentication',),
+    'DEFAULT_AUTHENTICATION_CLASSES': (),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -103,7 +110,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'src.wsgi.application'
-ASGI_APPLICATION = 'src.asgi.application'
+ASGI_APPLICATION = "src.asgi.application"
 
 DATABASES = {
     'default': {
@@ -136,6 +143,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': REDIS_URL,
+        'KEY_PREFIX': 'redis_cache'
     }
 }
 
@@ -159,8 +167,8 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 
 LANGUAGES = (('en', 'English'),)
 
-SESSION_COOKIE_NAME = 'sessionid'
-CSRF_COOKIE_NAME = 'csrftoken'
+SESSION_COOKIE_NAME = 'sessionid_chat'
+CSRF_COOKIE_NAME = 'csrftoken_chat'
 
 ROSETTA_SHOW_AT_ADMIN_PANEL = DEBUG
 
@@ -280,3 +288,12 @@ if (SENTRY_DSN := os.environ.get('SENTRY_DSN')) and ENABLE_SENTRY:
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
     )
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
