@@ -9,6 +9,15 @@ chatSocket.onmessage = function(e) {
     console.log('receive message', data)
     if ( data.action === 'send_message') {
         addMessage(data)
+        console.log(window.location.host)
+    }
+    else if ( data.action === 'chat_created' ) {
+        const element = document.querySelector(`[data-chat-id="${data.chat_id}"]`);
+        if (!element){
+          addChatToList(data.init_user.full_name)
+          const full_name = data.init_user.full_name
+          alert(`Пользователь ${full_name} Создал с вами чат!`)
+        }
     }
 };
 

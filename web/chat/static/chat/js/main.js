@@ -153,3 +153,20 @@ function getTemplate (message){
     }
     return template
 }
+
+
+function addChatToList(name) {
+    $.ajax({
+      url: `/api/v1/chat/chats/?search=${name}`,
+      type: 'get',
+      success: addChatToListSuccessHandler
+  })
+}
+
+function addChatToListSuccessHandler (data) {
+  console.log(data.results)
+  const addChatTemplate = chatTemplate(data.results[0]);
+  const chatList = $('#chatList')
+  chatList.append(addChatTemplate);
+  $('.chatList').click(makeActiveChat)
+}

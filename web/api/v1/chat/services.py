@@ -2,13 +2,16 @@ import re
 
 from django.db.models import QuerySet
 from django.conf import settings
+from channels.layers import get_channel_layer
+from dataclasses import asdict
+from asgiref.sync import async_to_sync
 
 from chat.models import Chat, Message, UserChat
 from chat.choices import CacheKeyChoices
 from .types import UserData, UserInitChatDataT
 from .additional_service import RequestsService, CacheService
 from .decorators import cache_decorator
-
+from chat.choices import ActionEnum
 
 class ChatService:
     def __init__(self):
@@ -64,8 +67,20 @@ class ChatService:
     def chat_handler(self, jwt: str, user_id: str):
         response = self.chat_init_request(jwt, user_id)
         user_data = self.typing_user_data(response)
-        self.create_models(user_data)
+        chat = self.create_models(user_data)
+        self.notify_user(chat, user_data)
         return user_data
+
+    @async_to_sync
+    async def notify_user(self, chat: Chat, user_data: UserInitChatDataT):
+        channel_layer = get_channel_layer()
+        data = {
+            'action': ActionEnum.CHAT_CREATED.value,
+            'chat_id': chat.id,
+            'init_user': asdict(user_data.user1)
+        }
+        await channel_layer.group_send(f'event_user_{user_data.user2.id}', {"type": "notify.user.new.chat", "data": data})
+        return channel_layer
 
     def add_chat_avatar(self, queryset: QuerySet[Chat], user_id: int) -> QuerySet[Chat]:
         ids = {key for chat in queryset for key in chat.name.keys() if str(key) != str(user_id)}
@@ -120,15 +135,15 @@ class BlogClientService:
         return self.requests_service.request(method='get', url=url, params=params)
 
     def get_user_data_by_jwt(self, jwt: str) -> dict:
-        if self.cache_service and (data := self.cache_service.cache_get(CacheKeyChoices.JWT, version=jwt)):
-            print('get cache')
-            return data
+        # if self.cache_service and (data := self.cache_service.cache_get(CacheKeyChoices.JWT, version=jwt)):
+        #     print('get cache')
+        #     return data
         path = '/api/v1/chat/user-data-by-jwt/'
         data = {'jwt_auth': jwt}
         url = self.requests_service.get_url(self.base_url, path)
         response_data = self.requests_service.request(method='post', url=url, data=data, headers=self.headers)
-        if self.cache_service:
-            self.cache_service.cache_set(value=response_data)
+        # if self.cache_service:
+        #     self.cache_service.cache_set(value=response_data)
         return response_data
 
     def get_user_data_by_id(self, id: int) -> dict:
@@ -138,7 +153,8 @@ class BlogClientService:
         return self.requests_service.request(method='post', url=url, data=data, headers=self.headers)
 
     def get_cached_user_data_by_jwt(self, jwt: str) -> dict:
-        self.cache_service = CacheService()
+        if self.cache_service is None:
+            self.cache_service = CacheService()
         if data := self.cache_service.cache_get(CacheKeyChoices.JWT, version=jwt):
             print('get cache')
             return data
@@ -147,7 +163,8 @@ class BlogClientService:
         return data
 
     def get_cached_user_data_by_id(self, id: int) -> dict:
-        self.cache_service = CacheService()
+        if self.cache_service is None:
+            self.cache_service = CacheService()
         if data := self.cache_service.cache_get(CacheKeyChoices.USER_ID, version=id):
             print('get cache')
             return data
@@ -159,14 +176,13 @@ class BlogClientService:
     def headers(self):
         return {'Authorization': f'Token {self.permission}'}
 
-    methods = {
-        'users_data': get_users_data,
-        'user_data_by_jwt': get_user_data_by_jwt,
-        'user_data_by_id': get_user_data_by_id,
-        'cached_user_data_by_jwt': get_cached_user_data_by_jwt,
-        'cached_user_data_by_id': get_cached_user_data_by_id
-    }
-
-    def blog_client_handler(self, command: str, *data_or_params: str | int):
-        return self.methods[command](self, *data_or_params)
-
+    # methods = {
+    #     'users_data': get_users_data,
+    #     'user_data_by_jwt': get_user_data_by_jwt,
+    #     'user_data_by_id': get_user_data_by_id,
+    #     'cached_user_data_by_jwt': get_cached_user_data_by_jwt,
+    #     'cached_user_data_by_id': get_cached_user_data_by_id
+    # }
+    #
+    # def blog_client_handler(self, command: str, *data_or_params: str | int):
+    #     return self.methods[command](self, *data_or_params)

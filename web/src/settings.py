@@ -12,7 +12,7 @@ DEBUG = int(os.environ.get('DEBUG', 0))
 
 ALLOWED_HOSTS: list = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
-BLOG_URL = os.environ.get('BLOG_URL', 'http://web-blog:8000')
+BLOG_URL = os.environ.get('BLOG_URL', 'http://web-blog:80')
 BLOG_HEADERS_PERMISSION = os.environ.get('BLOG_HEADERS_PERMISSION', 'owNV8NCVt0WuaCihX3Fy4kfV')
 
 if DEBUG:

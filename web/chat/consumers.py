@@ -11,13 +11,20 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.user: UserData = self.scope['user']
 
         chatList = await self.service.get_chats_id(self.user.id)
+
+        room = f'event_user_{self.user.id}'
+        await self.channel_layer.group_add(room, self.channel_name)
+
         async for chat in chatList:
             await self.channel_layer.group_add(chat, self.channel_name)
         await self.accept()
 
+
+
     # async def disconnect(self, close_code):
         # Leave room group
         # await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
     async def send_message_handler(self, data: dict):
         user = self.user
         message = await self.service.create_message(author=user.id, content=data['content'], chat_id=data['chatId'])
@@ -55,4 +62,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def chat_message_event(self, event: ChatMessageT):
         print(event)
         # message = event["data"]["message"]
+        await self.send_json(content=event['data'])
+
+    async def notify_user_new_chat(self, event):
+        print('notify', event)
         await self.send_json(content=event['data'])

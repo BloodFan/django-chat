@@ -6,6 +6,7 @@ from django.db.models import TextChoices
 class ActionEnum(Enum):
     SEND_MESSAGE = 'send_message'
     WRITE_MESSAGE = 'write_message'
+    CHAT_CREATED = 'chat_created'
 
 
 class CacheKeyChoices(TextChoices):
