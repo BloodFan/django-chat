@@ -1,5 +1,5 @@
-cd  ENV_STAGE: dev
-  USE_HTTPS: 0
+# cd  ENV_STAGE: dev
+#   USE_HTTPS: 0
 
 services:
   web:
