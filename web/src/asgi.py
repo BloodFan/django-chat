@@ -1,5 +1,6 @@
 import os
-from chat.middleware import AuthMiddlewareStack
+# from chat.middleware import AuthMiddlewareStack
+from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'src.settings')
