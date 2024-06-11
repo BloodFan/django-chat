@@ -1,8 +1,8 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from api.v1.chat.services import AsyncChatService
+from api.v1.chat.types import ChatMessageT, UserData
 from chat.choices import ActionEnum
-from api.v1.chat.types import UserData, DataMessageT, ChatMessageT
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -19,11 +19,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_add(chat, self.channel_name)
         await self.accept()
 
-
-
     # async def disconnect(self, close_code):
-        # Leave room group
-        # await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+    # Leave room group
+    # await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def send_message_handler(self, data: dict):
         user = self.user
@@ -31,16 +29,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         data['action'] = ActionEnum.SEND_MESSAGE.value
         data['author'] = str(user.id)
         data['created_at'] = str(message.created_at)
-        await self.channel_layer.group_send(
-            message.chat_id, {"type": "chat.message.event", "data": data}
-        )
+        await self.channel_layer.group_send(message.chat_id, {"type": "chat.message.event", "data": data})
 
     async def write_message_handler(self, data: dict):
         print(data, 'write_message_handler')
         data['action'] = ActionEnum.WRITE_MESSAGE.value
-        await self.channel_layer.group_send(
-            data['chatId'], {"type": "chat.message.event", "data": data}
-        )
+        await self.channel_layer.group_send(data['chatId'], {"type": "chat.message.event", "data": data})
 
     commands = {
         'sendMessage': send_message_handler,

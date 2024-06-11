@@ -1,11 +1,12 @@
 from django.contrib import admin
 
-from .models import Chat, UserChat, Message
+from .models import Chat, Message, UserChat
 
 
 class UserChatInline(admin.TabularInline):
     model = UserChat
     extra = 0
+
 
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):

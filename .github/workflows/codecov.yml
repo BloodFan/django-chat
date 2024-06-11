@@ -2,7 +2,10 @@ name: Coverage
 
 on:
   push:
-    branches: [ master ]
+    branches-ignore:
+      - master
+    tags-ignore:
+      - v*
 
 jobs:
   coverage:

@@ -1,12 +1,16 @@
 name: "Release CI/CD"
 
 on:
-  push:
-    tags:
-      - "v*"
+#  push:
+#    tags:
+#      - "v*"
 #  release:
 #    types: [ published ]
-
+  push:
+    branches-ignore:
+      - master
+    tags-ignore:
+      - v*
 
 env:
   DOCKER_REPOSITORY: "bandirom/django-template"

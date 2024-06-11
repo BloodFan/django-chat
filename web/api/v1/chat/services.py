@@ -1,24 +1,25 @@
 import re
-
-from django.db.models import QuerySet
-from django.conf import settings
-from channels.layers import get_channel_layer
 from dataclasses import asdict
-from asgiref.sync import async_to_sync
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.conf import settings
+from django.db.models import QuerySet
+
+from chat.choices import ActionEnum, CacheKeyChoices
 from chat.models import Chat, Message, UserChat
-from chat.choices import CacheKeyChoices
-from .types import UserData, UserInitChatDataT
-from .additional_service import RequestsService, CacheService
+
+from .additional_service import CacheService, RequestsService
 from .decorators import cache_decorator
-from chat.choices import ActionEnum
+from .types import UserData, UserInitChatDataT
+
 
 class ChatService:
     def __init__(self):
         self.cache_service = CacheService()
         self.blog_client_service = BlogClientService()
 
-    @cache_decorator(CacheKeyChoices.CHAT_QUERYSET, timeout=60*60)
+    @cache_decorator(CacheKeyChoices.CHAT_QUERYSET, timeout=60 * 60)
     def get_chat_queryset(self, user_id: int) -> QuerySet[Chat]:
         queryset = Chat.objects.filter(users__user=user_id)
         return queryset
@@ -74,12 +75,10 @@ class ChatService:
     @async_to_sync
     async def notify_user(self, chat: Chat, user_data: UserInitChatDataT):
         channel_layer = get_channel_layer()
-        data = {
-            'action': ActionEnum.CHAT_CREATED.value,
-            'chat_id': chat.id,
-            'init_user': asdict(user_data.user1)
-        }
-        await channel_layer.group_send(f'event_user_{user_data.user2.id}', {"type": "notify.user.new.chat", "data": data})
+        data = {'action': ActionEnum.CHAT_CREATED.value, 'chat_id': chat.id, 'init_user': asdict(user_data.user1)}
+        await channel_layer.group_send(
+            f'event_user_{user_data.user2.id}', {"type": "notify.user.new.chat", "data": data}
+        )
         return channel_layer
 
     def add_chat_avatar(self, queryset: QuerySet[Chat], user_id: int) -> QuerySet[Chat]:
@@ -103,7 +102,7 @@ class AsyncChatService:
         return await Message.objects.acreate(author=author, content=content, chat_id=chat_id)
 
     async def get_jwt(self, headers) -> str:
-        """ Альтернативный метод получения jwt из headers."""
+        """Альтернативный метод получения jwt из headers."""
         headers = dict(headers)
         cookie = headers[b'cookie'].decode('utf-8')
         jwt = re.findall(r'(?<=jwt-auth=).+(?=; refresh=)', cookie)[0]
@@ -169,7 +168,7 @@ class BlogClientService:
             print('get cache')
             return data
         data = self.get_user_data_by_id(id)
-        self.cache_service.cache_set(value=data, timeout=60*60)
+        self.cache_service.cache_set(value=data, timeout=60 * 60)
         return data
 
     @property

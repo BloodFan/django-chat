@@ -1,10 +1,11 @@
 from functools import wraps
 
 from chat.choices import CacheKeyChoices
+
 from .additional_service import CacheService
 
 
-def cache_decorator(key_type: CacheKeyChoices, timeout: int = 60*1):
+def cache_decorator(key_type: CacheKeyChoices, timeout: int = 60 * 1):
     def decorator(func):
         @wraps(func)
         def wrapper(self, arg: int | str):
@@ -14,7 +15,9 @@ def cache_decorator(key_type: CacheKeyChoices, timeout: int = 60*1):
             data = func(self, arg)
             service.cache_set(data, timeout=timeout)
             return data
+
         return wrapper
+
     return decorator
 
 

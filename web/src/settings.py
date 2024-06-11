@@ -12,7 +12,7 @@ DEBUG = int(os.environ.get('DEBUG', 0))
 
 ALLOWED_HOSTS: list = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 
-BLOG_URL = os.environ.get('BLOG_URL', 'http://web-blog:80')
+BLOG_URL = os.environ.get('BLOG_URL', 'http://web-blog:8000')
 BLOG_HEADERS_PERMISSION = os.environ.get('BLOG_HEADERS_PERMISSION', 'owNV8NCVt0WuaCihX3Fy4kfV')
 
 if DEBUG:
@@ -58,11 +58,7 @@ THIRD_PARTY_APPS = [
     'django_filters',
 ]
 
-LOCAL_APPS = [
-    'main.apps.MainConfig',
-    'chat.apps.ChatConfig'
-
-]
+LOCAL_APPS = ['main.apps.MainConfig', 'chat.apps.ChatConfig']
 
 INSTALLED_APPS += THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -143,7 +139,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': REDIS_URL,
-        'KEY_PREFIX': 'redis_cache'
+        'KEY_PREFIX': 'redis_cache',
     }
 }
 

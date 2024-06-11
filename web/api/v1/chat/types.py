@@ -1,5 +1,5 @@
-from typing import NamedTuple, TypedDict
 from dataclasses import dataclass
+from typing import NamedTuple, TypedDict
 
 
 @dataclass

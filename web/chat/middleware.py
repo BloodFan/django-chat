@@ -1,11 +1,9 @@
 from channels.sessions import CookieMiddleware
 
 from api.v1.chat.services import AsyncChatService
-from api.v1.chat.types import UserData
 
 
 class CookieAuthMiddleware:
-
     def __init__(self, app):
         print(f'{app=}')
         self.app = app

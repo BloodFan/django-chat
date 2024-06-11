@@ -1,5 +1,5 @@
+from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
-from django.db.models import QuerySet, Q
 
 from chat.models import Chat
 

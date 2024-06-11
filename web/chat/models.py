@@ -1,9 +1,11 @@
-from django.db import models
 from uuid import uuid4
+
+from django.db import models
 
 
 def hex_uuid() -> str:
     return uuid4().hex
+
 
 # hex_uuid=lambda: uuid4().hex
 
@@ -34,12 +36,7 @@ class UserChat(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=('chat', 'user'),
-                name='unique user in chat'
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=('chat', 'user'), name='unique user in chat')]
 
     def __str__(self):
         return f'{self.user}'

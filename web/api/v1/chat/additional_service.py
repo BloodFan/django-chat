@@ -1,20 +1,15 @@
 from typing import Optional, Union
 from urllib.parse import urljoin
-import requests
-from requests.adapters import HTTPAdapter
 
+import requests
 from django.core.cache import cache
+from requests.adapters import HTTPAdapter
 
 from chat.choices import CacheKeyChoices, CacheNameChoices
 
 
 class RequestsService:
-    def __init__(
-        self,
-        session: requests.Session = None,
-        max_retries: int = 3,
-        adapter: HTTPAdapter = None
-    ):
+    def __init__(self, session: requests.Session = None, max_retries: int = 3, adapter: HTTPAdapter = None):
         self.max_retries = max_retries
         self.adapter = adapter or self.get_adapter()
         self.session = session or self.get_session()
@@ -28,12 +23,7 @@ class RequestsService:
         return urljoin(base_url, url)
 
     def request(
-        self,
-        method: str,
-        url: str,
-        data: dict = None,
-        params: dict = None,
-        headers: dict = None
+        self, method: str, url: str, data: dict = None, params: dict = None, headers: dict = None
     ) -> Optional[dict]:
         response = self.session.request(method=method, url=url, data=data, headers=headers, params=params)
         return self.handle_response(response)

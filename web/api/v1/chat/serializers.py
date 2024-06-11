@@ -10,13 +10,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
-        fields = (
-            'id',
-            'name',
-            'created_at',
-            'user_id',
-            'image'
-        )
+        fields = ('id', 'name', 'created_at', 'user_id', 'image')
 
     def get_user_id(self, chat: Chat) -> int:
         return self.context['request'].user.id
@@ -32,7 +26,6 @@ class ChatSerializer(serializers.ModelSerializer):
     #     response_data = BlogClientService().get_cached_user_data_by_id(id)
     #     image = response_data['image']
     #     return image
-
 
 
 class MessageSerializer(serializers.ModelSerializer):

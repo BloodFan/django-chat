@@ -1,14 +1,16 @@
-from rest_framework.generics import GenericAPIView
 from django.db.models import F
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication
 
-from .serializers import ChatSerializer, MessageSerializer, ChatInitSerializer
-from . authentications import JWTAuthentication
-from .services import ChatService, BlogClientService
-from .filters import ChatFilter
+# from rest_framework.authentication import SessionAuthentication
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+
 from chat.models import Message
+
+from .authentications import JWTAuthentication
+from .filters import ChatFilter
+from .serializers import ChatInitSerializer, ChatSerializer, MessageSerializer
+from .services import ChatService
 from main.pagination import BasePageNumberPagination
 
 
@@ -17,7 +19,7 @@ class ChatAPIView(GenericAPIView):
     pagination_class = BasePageNumberPagination
     filterset_class = ChatFilter
     permission_classes = []
-    authentication_classes = (JWTAuthentication, )
+    authentication_classes = (JWTAuthentication,)
 
     def get(self, request):
         queryset = self.get_queryset()
@@ -45,6 +47,7 @@ class ChatMessageAPIView(GenericAPIView):
 
 class ChatInitView(GenericAPIView):
     """Инициализация чата."""
+
     serializer_class = ChatInitSerializer
     permission_classes = []
 
