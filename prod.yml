@@ -11,8 +11,8 @@ services:
       - redis_socket:/redis_socket
       - postgres_socket:/postgres_socket
       - media_files:/web/media/
-    environment:
-      <<: *variables
+    # environment:
+    #   <<: *variables
     ports:
       - "8010:8000"
     env_file:
@@ -43,8 +43,8 @@ services:
       - docker/prod/env/.env
       - docker/prod/env/.db.env
       - docker/prod/env/.data.env
-    environment:
-      <<: *variables
+    # environment:
+    #   <<: *variables
     depends_on: [redis]
     restart: always
     volumes:

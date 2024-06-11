@@ -12,7 +12,6 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from chat.routing import websocket_urlpatterns
 from chat.middleware import AuthMiddlewareStack
 
-# пиздец
 application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
