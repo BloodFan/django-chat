@@ -29,17 +29,17 @@ class TemplateAPIView(APIView):
         return Response()
 
 
-class SetUserTimeZone(GenericAPIView):
-    serializer_class = SetTimeZoneSerializer
-    authentication_classes = (SessionAuthentication,)
-
-    def post(self, request: 'Request'):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        response = Response(serializer.data)
-        response.set_cookie(
-            key=getattr(settings, 'TIMEZONE_COOKIE_NAME', 'timezone'),
-            value=serializer.data.get('timezone'),
-            max_age=getattr(settings, 'TIMEZONE_COOKIE_AGE', 86400),
-        )
-        return response
+# class SetUserTimeZone(GenericAPIView):
+#     serializer_class = SetTimeZoneSerializer
+#     authentication_classes = (SessionAuthentication,)
+#
+#     def post(self, request: 'Request'):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         response = Response(serializer.data)
+#         response.set_cookie(
+#             key=getattr(settings, 'TIMEZONE_COOKIE_NAME', 'timezone'),
+#             value=serializer.data.get('timezone'),
+#             max_age=getattr(settings, 'TIMEZONE_COOKIE_AGE', 86400),
+#         )
+#         return response
