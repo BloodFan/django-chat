@@ -1,5 +1,4 @@
-x-variables: &variables
-  ENV_STAGE: dev
+cd  ENV_STAGE: dev
   USE_HTTPS: 0
 
 services:
@@ -7,7 +6,7 @@ services:
 #    build:
 #       context: .
 #       dockerfile: docker/prod/web/Dockerfile
-    image: bloodfan/django-chat:${DOCKER_TAG:-latest}
+    image: bloodfan/django-chat
     volumes:
       - redis_socket:/redis_socket
       - postgres_socket:/postgres_socket
@@ -37,7 +36,7 @@ services:
 #    build:
 #       context: .
 #       dockerfile: docker/prod/web/Dockerfile
-    image: bloodfan/django-chat:${DOCKER_TAG:-latest}
+    image: bloodfan/django-chat
     entrypoint: ""
     command: celery -A src worker --beat -l info
     env_file:
