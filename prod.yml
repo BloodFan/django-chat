@@ -3,7 +3,7 @@ x-variables: &variables
   USE_HTTPS: 0
 
 services:
-   web:
+  web:
     image: bloodfan/django-chat:${DOCKER_TAG:-latest}
     volumes:
       - redis_socket:/redis_socket
