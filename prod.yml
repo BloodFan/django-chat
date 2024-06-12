@@ -3,9 +3,9 @@
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: docker/prod/web/Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: docker/prod/web/Dockerfile
     image: bloodfan/django-chat
     volumes:
       - redis_socket:/redis_socket
@@ -33,9 +33,9 @@ services:
     extra_hosts:
       - "gateway-host:172.17.0.1"
   celery:
-    build:
-      context: .
-      dockerfile: docker/prod/web/Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: docker/prod/web/Dockerfile
     image: bloodfan/django-chat
     entrypoint: ""
     command: celery -A src worker --beat -l info
